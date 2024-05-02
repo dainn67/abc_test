@@ -179,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => DiagnosticTestResult(
                           subjectList: subjectDataList,
+                          circleProgressImage: 'assets/images/level_inter.png',
                           beginnerImage: 'assets/images/level_beginner.png',
                           intermediateImage: 'assets/images/level_inter.png',
                           advancedImage: 'assets/images/level_advanced.png',

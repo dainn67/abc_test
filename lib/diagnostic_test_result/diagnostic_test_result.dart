@@ -1,5 +1,6 @@
 import 'package:abc_test/diagnostic_test_result/widgets/general_result_box.dart';
 import 'package:abc_test/diagnostic_test_result/widgets/subject_tile.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_abc_jsc_components/flutter_abc_jsc_components.dart';
 
@@ -86,19 +87,7 @@ class DiagnosticTestResult extends StatelessWidget {
                       ),
 
                       // List of subject results
-                      ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: subjectList.length,
-                          itemBuilder: (_, index) {
-                            final current = subjectList[index];
-                            return SubjectTile(
-                                title: current.title,
-                                boxColor: boxColor,
-                                icon: current.icon,
-                                progress: current.progress,
-                                color: _getLevelColor(current.progress));
-                          })
+                      _buildSubjectResultList()
                     ],
                   ),
                 )),
@@ -120,6 +109,25 @@ class DiagnosticTestResult extends StatelessWidget {
         ),
       ),
     ]);
+  }
+
+  Widget _buildSubjectResultList() {
+    subjectList.sort(
+        (subject1, subject2) => subject1.progress < subject2.progress ? 0 : 1);
+    return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: const EdgeInsets.only(top: 8),
+        itemCount: subjectList.length,
+        itemBuilder: (_, index) {
+          final current = subjectList[index];
+          return SubjectTile(
+              title: current.title,
+              boxColor: boxColor,
+              icon: current.icon,
+              progress: current.progress,
+              color: _getLevelColor(current.progress));
+        });
   }
 
   Color _getLevelColor(double progress) {
