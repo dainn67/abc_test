@@ -131,7 +131,7 @@ class DiagnosticTestResult extends StatelessWidget {
   }
 
   Color _getLevelColor(double progress) {
-    if (progress < 20) {
+    if (progress < 40) {
       return beginnerColor;
     } else if (progress < 80) {
       return intermediateColor;

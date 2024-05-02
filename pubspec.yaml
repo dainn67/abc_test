@@ -40,6 +40,7 @@ dependencies:
       url: git@github.com:abc-elearning-app/abc_flutter_components.git
       ref: feat/new_components
   percent_indicator: ^4.2.3
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:

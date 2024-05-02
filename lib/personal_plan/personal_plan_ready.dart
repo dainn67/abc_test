@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_abc_jsc_components/flutter_abc_jsc_components.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +52,7 @@ class StudyPlanReadyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final informationDataList = <InformationData>[
       InformationData(reminderImage ?? 'assets/images/ready_reminder.svg',
-          'Reminder', _getReminderTime(reminderTime ?? TimeOfDay.now())),
+          'Reminder', _getDisplayReminderTime(reminderTime ?? TimeOfDay.now())),
       InformationData(
           examDateImage ?? 'assets/images/ready_calendar.svg',
           'Exam date',
@@ -124,28 +125,18 @@ class StudyPlanReadyScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                width: double.infinity,
-                child: MainButton(
-                  title: 'Start Learning',
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: mainColor,
-                  borderRadius: 16,
-                  textStyle: const TextStyle(fontSize: 18),
-                  onPressed: () => onStartLearning(),
-                ),
-              )
+              _buildButton()
             ],
           ),
         ),
       ),
-      SafeArea(
-          child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop(context);
-              },
-              icon: Icon(Icons.chevron_left)))
+
+      // Debug button
+      if (kDebugMode)
+        SafeArea(
+            child: IconButton(
+                onPressed: () => Navigator.of(context).pop(context),
+                icon: const Icon(Icons.chevron_left, color: Colors.red)))
     ]);
   }
 
@@ -174,7 +165,20 @@ class StudyPlanReadyScreen extends StatelessWidget {
         ),
       );
 
-  _getReminderTime(TimeOfDay time) {
+  Widget _buildButton() => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        width: double.infinity,
+        child: MainButton(
+          title: 'Start Learning',
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          backgroundColor: mainColor,
+          borderRadius: 16,
+          textStyle: const TextStyle(fontSize: 18),
+          onPressed: () => onStartLearning(),
+        ),
+      );
+
+  _getDisplayReminderTime(TimeOfDay time) {
     final hour = time.hour <= 12 ? time.hour : time.hour - 12;
     final displayHour = hour < 10 ? '0$hour' : hour.toString();
     final displayMinute =

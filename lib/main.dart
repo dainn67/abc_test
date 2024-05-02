@@ -130,8 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
       SubjectResultData(
           'Arithmetic Reasoning', 10, 'assets/images/subject_icon.svg'),
       SubjectResultData(
-          'Electrical Engineering', 30, 'assets/images/subject_icon.svg'),
-      SubjectResultData('Haz Mat', 15, 'assets/images/subject_icon.svg'),
+          'Electrical Engineering', 95, 'assets/images/subject_icon.svg'),
+      SubjectResultData('Haz Mat', 50, 'assets/images/subject_icon.svg'),
     ];
 
     return Scaffold(
@@ -194,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        StudyPlanAnalyzingScreen(onFinish: () {})));
+                        StudyPlanAnalyzingScreen(loadingTime: 10000,onFinish: () {})));
               },
               child: const Text('Analyzing'),
             ),
