@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/page_indicator/page_indicator.dart';
+
+import '../page_indicator/page_indicator.dart';
 
 class IntroStudyPlanData {
   final int index;
@@ -78,7 +77,7 @@ class _IntroStudyPlanPagesState extends State<IntroStudyPlanPages> {
               children: [
                 // Upper background
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Stack(alignment: Alignment.center, children: [
                     Container(color: widget.lowerBackgroundColor),
                     Container(
@@ -92,7 +91,7 @@ class _IntroStudyPlanPagesState extends State<IntroStudyPlanPages> {
 
                 // Lower background
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Stack(children: [
                     Container(color: widget.upperBackgroundColor),
                     Container(
@@ -122,7 +121,18 @@ class _IntroStudyPlanPagesState extends State<IntroStudyPlanPages> {
           ]),
         ),
       ),
-      SafeArea(child: IconButton(onPressed: (){Navigator.of(context).pop(context);}, icon: Icon(Icons.chevron_left)))
+      SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
+              IconButton(
+                  onPressed: () => Navigator.of(context).pop(context),
+                  icon: const Icon(
+                    Icons.chevron_left,
+                    color: Colors.red,
+                  )),
+            ],
+          ))
     ]);
   }
 
@@ -136,7 +146,7 @@ class _IntroStudyPlanPagesState extends State<IntroStudyPlanPages> {
 
           // Page indicator and button
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Column(
               children: [
                 Padding(

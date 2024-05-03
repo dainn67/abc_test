@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'email_page.dart';
-import 'otp_page.dart';
+import 'pages/email_page.dart';
+import 'pages/otp_page.dart';
 
 enum TabType { email, code }
 
@@ -31,7 +32,7 @@ class LoginPages extends StatefulWidget {
       this.upperBackgroundColor = const Color(0xFFEEFFFA),
       this.lowerBackgroundColor = Colors.white,
       this.buttonTextColor = Colors.white,
-      this.textColor = Colors.grey,
+      this.textColor = Colors.black54,
       required this.onRequestCodeClick,
       required this.onSkip,
       required this.onSubmit,
@@ -139,12 +140,21 @@ class _LoginPagesState extends State<LoginPages> {
           ],
         ),
       ),
-      SafeArea(
-          child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop(context);
-              },
-              icon: Icon(Icons.chevron_left)))
+
+      // Debug
+      if (kDebugMode)
+        SafeArea(
+            child: Column(
+          children: [
+            const SizedBox(height: 50),
+            IconButton(
+                onPressed: () => Navigator.of(context).pop(context),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.red,
+                )),
+          ],
+        ))
     ]);
   }
 
@@ -259,6 +269,8 @@ class _LoginPagesState extends State<LoginPages> {
   _handleButtonClick() {
     // If at email tab
     if (_pageController.page == 0) {
+      FocusScope.of(context).unfocus();
+
       _pageController.nextPage(
           duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
 

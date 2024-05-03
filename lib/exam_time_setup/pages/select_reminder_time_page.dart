@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/custom_datetime_picker/custom_time_picker.dart';
+
+import '../../custom_datetime_picker/custom_time_picker.dart';
 
 class SelectReminderTimePage extends StatelessWidget {
   final String title;
@@ -35,7 +36,7 @@ class SelectReminderTimePage extends StatelessWidget {
           ),
           Expanded(
               child: Transform.scale(
-                  scale: 1.2,
+                  scale: 1.1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: CustomTimePicker(

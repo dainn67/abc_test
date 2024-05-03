@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -35,8 +34,9 @@ class OtpPage extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 30),
-        Expanded(child: image),
+        Expanded(flex: 2, child: image),
         Expanded(
+          flex: 1,
           child: Padding(
             padding: const EdgeInsets.all(30),
             child: Text(

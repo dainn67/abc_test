@@ -15,16 +15,20 @@ class FloatingTextData {
 class StudyPlanAnalyzingScreen extends StatefulWidget {
   final Color backgroundColor;
   final Color mainColor;
-  final String? image;
+  final String? loadingImage;
+  final String? finishImage;
   final int loadingTime;
+  final int floatingTextAnimationTime;
   final void Function() onFinish;
 
   const StudyPlanAnalyzingScreen({
     super.key,
     this.backgroundColor = const Color(0xFFEEFFFA),
     this.mainColor = const Color(0xFF579E89),
-    this.image,
+    this.loadingImage,
+    this.finishImage,
     this.loadingTime = 2000,
+    this.floatingTextAnimationTime = 3000,
     required this.onFinish,
   });
 
@@ -43,9 +47,9 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
   final List<Animation<double>> _fadeAnimations = [];
 
   final floatingTextList = [
-    FloatingTextData(100, -150, 'Chủ nghĩa xã hội'),
-    FloatingTextData(-100, -150, 'Tư tưởng Hồ Chí Minh'),
-    FloatingTextData(-100, 150, 'Nguyên lí Mác Lênin'),
+    FloatingTextData(80, -80, 'Diagnostic Test'),
+    FloatingTextData(-80, -80, 'Exam Date'),
+    FloatingTextData(-80, 80, 'Reminders'),
   ];
 
   double opacityValue = 0;
@@ -55,12 +59,12 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
     _progressValue = ValueNotifier<int>(0);
     _startLoadingTimer();
 
-    super.initState();
-
     _animControllers = List.generate(
         3,
         (index) => AnimationController(
-            vsync: this, duration: const Duration(seconds: 2)));
+            vsync: this,
+            duration:
+                Duration(milliseconds: widget.floatingTextAnimationTime)));
 
     int startTime = 0;
     for (AnimationController animController in _animControllers) {
@@ -72,16 +76,18 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
 
       animController.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Future.delayed(const Duration(seconds: 2),
+          Future.delayed(const Duration(seconds: 1),
               () => animController.forward(from: 0));
         }
       });
 
       Future.delayed(
-          Duration(seconds: startTime), () => animController.forward());
+          Duration(milliseconds: startTime), () => animController.forward());
 
-      startTime++;
+      startTime += 500;
     }
+
+    super.initState();
   }
 
   void _startLoadingTimer() {
@@ -102,7 +108,6 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
     _timer.cancel();
 
     for (AnimationController animController in _animControllers) {
-      animController.clearStatusListeners();
       animController.dispose();
     }
 
@@ -173,7 +178,7 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
     const lineWidth = 20.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 50),
+      padding: const EdgeInsets.symmetric(vertical: 40),
       child: CircleAvatar(
         backgroundColor: widget.mainColor.withOpacity(0.3),
         radius: outerRadius,
@@ -181,44 +186,51 @@ class _StudyPlanAnalyzingScreenState extends State<StudyPlanAnalyzingScreen>
             radius: outerRadius - lineWidth,
             circularStrokeCap: CircularStrokeCap.round,
             lineWidth: lineWidth,
-            backgroundColor: widget.mainColor.withOpacity(0.5),
+            backgroundColor: widget.mainColor.withOpacity(0.4),
             progressColor: widget.mainColor,
             percent: 1,
             animation: true,
             animationDuration: widget.loadingTime,
-            onAnimationEnd: () => widget.onFinish(),
+            onAnimationEnd: () => Future.delayed(
+                const Duration(milliseconds: 200), () => widget.onFinish()),
             center: CircleAvatar(
-              radius: 100,
-              backgroundColor: Colors.white,
-              child: CircleAvatar(
-                  radius: 100,
-                  backgroundColor: widget.mainColor.withOpacity(0.3),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(
-                          widget.image ?? 'assets/images/analyzing.png'),
-                      Stack(
-                          children: List.generate(
-                              3,
-                              (index) => AnimatedBuilder(
-                                  animation: _animControllers[index],
-                                  builder: (_, __) => Transform.translate(
-                                        offset: Offset(
-                                          _calculateOffsetX(index),
-                                          _calculateOffsetY(index),
-                                        ),
-                                        child: Opacity(
-                                            opacity:
-                                                _calculateFadeOpacity(index),
-                                            child: Text(
-                                                floatingTextList[index].text)),
-                                      ))))
-                    ],
-                  )),
-            )),
+                radius: outerRadius - 2 * lineWidth,
+                backgroundColor: Colors.white.withOpacity(0.4),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ValueListenableBuilder(
+                        valueListenable: _progressValue,
+                        builder: (_, value, __) => Transform.scale(
+                            scale: 1.2,
+                            child: Image.asset(_getImagePath(value)))),
+                    Stack(
+                        children: List.generate(
+                            3,
+                            (index) => AnimatedBuilder(
+                                animation: _animControllers[index],
+                                builder: (_, __) => Transform.translate(
+                                    offset: Offset(
+                                      _calculateOffsetX(index),
+                                      _calculateOffsetY(index),
+                                    ),
+                                    child: Opacity(
+                                      opacity: _calculateFadeOpacity(index),
+                                      child: Text(floatingTextList[index].text,
+                                          style: const TextStyle(
+                                              color: Colors.black)),
+                                    )))))
+                  ],
+                ))),
       ),
     );
+  }
+
+  String _getImagePath(int value) {
+    if (value < 100) {
+      return widget.loadingImage ?? 'assets/images/analyzing.png';
+    }
+    return widget.finishImage ?? 'assets/images/analyzing_done.png';
   }
 
   double _calculateOffsetX(int index) =>

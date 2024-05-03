@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_abc_jsc_components/flutter_abc_jsc_components.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../main_button.dart';
 
 class InformationData {
   final String icon;
@@ -166,7 +167,7 @@ class StudyPlanReadyScreen extends StatelessWidget {
       );
 
   Widget _buildButton() => Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         width: double.infinity,
         child: MainButton(
           title: 'Start Learning',

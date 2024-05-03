@@ -1,8 +1,8 @@
 import 'package:abc_test/diagnostic_test_result/widgets/general_result_box.dart';
 import 'package:abc_test/diagnostic_test_result/widgets/subject_tile.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_abc_jsc_components/flutter_abc_jsc_components.dart';
+
+import '../main_button.dart';
 
 class SubjectResultData {
   final String title;

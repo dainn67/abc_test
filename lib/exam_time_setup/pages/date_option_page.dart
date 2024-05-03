@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../custom_datetime_picker/custom_date_picker.dart';
 
 class DateOptionPage extends StatefulWidget {
   final String title;
@@ -6,8 +10,10 @@ class DateOptionPage extends StatefulWidget {
   final Color appBarColor;
   final Color mainColor;
   final Color optionBoxFillColor;
+  final Map<String, dynamic> selectedTime;
 
   final PageController pageController;
+  final ValueNotifier<int> pageIndex;
 
   const DateOptionPage({
     super.key,
@@ -17,6 +23,8 @@ class DateOptionPage extends StatefulWidget {
     required this.appBarColor,
     required this.mainColor,
     required this.optionBoxFillColor,
+    required this.selectedTime,
+    required this.pageIndex,
   });
 
   @override
@@ -55,7 +63,11 @@ class _DateOptionPageState extends State<DateOptionPage> {
             ),
             ValueListenableBuilder(
                 valueListenable: _selectedIndex,
-                builder: (_, value, __) => Column(
+                builder: (_, value, __) => Visibility(
+                  visible: value != 0,
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Column(
                       children: [
                         _buildSelectedOptionFrame(
                             index: 0,
@@ -72,14 +84,14 @@ class _DateOptionPageState extends State<DateOptionPage> {
                                           ? Colors.black
                                           : Colors.white,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 18),
+                                      fontSize: 16),
                                 ),
                                 Text('Pick A Date From Calendar',
                                     style: TextStyle(
                                         fontSize: 15,
                                         color: _isColorLight(value == 0
-                                            ? widget.mainColor
-                                            : widget.optionBoxFillColor)
+                                                ? widget.mainColor
+                                                : widget.optionBoxFillColor)
                                             ? Colors.grey.shade700
                                             : Colors.grey.shade200)),
                               ],
@@ -89,21 +101,40 @@ class _DateOptionPageState extends State<DateOptionPage> {
                             index: 1,
                             isSelected: value == 1,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8),
                               child: Text(
                                 "I Don't Know My Exam Date Yet",
                                 style: TextStyle(
                                     color: _isColorLight(value == 1
-                                        ? widget.mainColor
-                                        : widget.optionBoxFillColor)
+                                            ? widget.mainColor
+                                            : widget.optionBoxFillColor)
                                         ? Colors.black
                                         : Colors.white,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 18),
+                                    fontSize: 16),
                               ),
                             )),
                       ],
-                    ))
+                    ),
+                  ),
+                )),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: _selectedIndex,
+                builder: (_, value, __) => Expanded(
+                  child: Visibility(
+                    visible: value == 0 ? true : false,
+                    child: CustomDatePicker(
+                      onSelectDate: (DateTime selectedDate) {
+                        widget.selectedTime['exam_date'] =
+                            selectedDate.toIso8601String();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -144,18 +175,16 @@ class _DateOptionPageState extends State<DateOptionPage> {
   _handleSelectOption(int index) {
     _selectedIndex.value = index;
 
-    // Delay for smooth animation
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (_selectedIndex.value == 0) {
-        widget.pageController.nextPage(
+    if (_selectedIndex.value == 0) {
+      widget.pageIndex.value = 0;
+    } else {
+      // Delay for smoother animation
+      Future.delayed(const Duration(milliseconds: 200), () {
+        widget.pageController.animateToPage(2,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut);
-      } else {
-        widget.pageController.animateToPage(3,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut);
-      }
-    });
+      });
+    }
   }
 
   _isColorLight(Color color) {

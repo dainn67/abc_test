@@ -23,10 +23,11 @@ class EmailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(child: image),
+        Expanded(flex: 2, child: image),
 
         // Detail text
         Expanded(
+          flex: 1,
           child: Padding(
             padding: const EdgeInsets.all(30),
             child: Text(
@@ -57,9 +58,11 @@ class EmailPage extends StatelessWidget {
                   cursorColor: const Color(0xFF307561),
                   decoration: InputDecoration(
                       filled: true,
-                      hintText: 'Type your email',
-                      hintStyle:
-                          TextStyle(color: Colors.grey.shade300, fontSize: 18),
+                      hintText: 'Please type your email address!',
+                      hintStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.grey.shade300,
+                          fontSize: 18),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),

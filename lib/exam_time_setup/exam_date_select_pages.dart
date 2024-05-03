@@ -1,8 +1,8 @@
+import 'package:abc_test/exam_time_setup/pages/date_option_page.dart';
+import 'package:abc_test/exam_time_setup/pages/select_reminder_time_page.dart';
+import 'package:abc_test/exam_time_setup/pages/start_diagnostic_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/exam_time_setup/pages/date_option_page.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/exam_time_setup/pages/select_exam_date_page.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/exam_time_setup/pages/select_reminder_time_page.dart';
-import 'package:flutter_abc_jsc_components/src/widgets/exam_time_setup/pages/start_diagnostic_page.dart';
 
 class ExamDateSelectPages extends StatefulWidget {
   final List<Widget> pageImages;
@@ -42,7 +42,7 @@ class ExamDateSelectPages extends StatefulWidget {
 class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
   List<Widget> tabList = [];
   final pageController = PageController(keepPage: true);
-  final _pageIndex = ValueNotifier<int>(0);
+  final pageIndex = ValueNotifier<int>(-1);
 
   Map<String, dynamic> selectedTime = {};
 
@@ -56,15 +56,12 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
         appBarColor: widget.appBarColor,
         optionBoxFillColor: widget.optionBoxFillColor,
         pageController: pageController,
+        selectedTime: selectedTime,
+        pageIndex: pageIndex,
       ),
-      SelectExamDatePage(
-          title: 'When Is Your Exam ?',
-          image: widget.pageImages[1],
-          pageController: pageController,
-          selectedTime: selectedTime),
       SelectReminderTimePage(
-        title: 'Would you like to set study reminders ?',
-        image: widget.pageImages[2],
+        title: 'Would You Like To Set Study Reminders?',
+        image: widget.pageImages[1],
         selectedTime: selectedTime,
         pageController: pageController,
       ),
@@ -72,7 +69,7 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
           title: 'Diagnostic Test',
           subTitle:
               'Take our diagnostic test to assess your current level and get a personalized study plan.',
-          image: widget.pageImages[3])
+          image: widget.pageImages[1])
     ];
 
     // Initial selected time
@@ -81,7 +78,11 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
     selectedTime['reminder_minute'] = TimeOfDay.now().minute.toString();
 
     pageController.addListener(() {
-      _pageIndex.value = pageController.page!.toInt();
+      if (pageController.page == 0) {
+        pageIndex.value = -1;
+      } else {
+        pageIndex.value = pageController.page!.toInt();
+      }
     });
     super.initState();
   }
@@ -89,7 +90,7 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
   @override
   void dispose() {
     pageController.dispose();
-    _pageIndex.dispose();
+    pageIndex.dispose();
     super.dispose();
   }
 
@@ -113,22 +114,23 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
 
                 // Main content
                 PageView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: const RightOnlyScrollPhysics(),
                     controller: pageController,
-                    itemCount: 4,
+                    itemCount: tabList.length,
                     itemBuilder: (_, index) => tabList[index])
               ]),
             ),
 
             // Dynamic lower background
             ValueListenableBuilder(
-                valueListenable: _pageIndex,
+                valueListenable: pageIndex,
                 builder: (_, value, __) => AnimatedContainer(
-                      height: value == 0
+                      height: value == -1
                           ? 0
                           : MediaQuery.of(context).size.height * 0.2,
                       duration: const Duration(milliseconds: 200),
                       child: Stack(children: [
+                        // Background
                         Container(color: widget.upperBackgroundColor),
                         Container(
                           decoration: BoxDecoration(
@@ -144,52 +146,8 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Next button
-                                Container(
-                                  width: double.infinity,
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: ElevatedButton(
-                                    onPressed: () => _handleMainButtonClick(),
-                                    style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 15),
-                                        backgroundColor: widget.mainColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15))),
-                                    child: Text(
-                                      _getButtonText(value),
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          color: widget.mainButtonTextColor),
-                                    ),
-                                  ),
-                                ),
-
-                                // Not now button
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: double.infinity,
-                                  height: value <= 1 ? 0 : 50,
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  child: ElevatedButton(
-                                      onPressed: () =>
-                                          _handleNotNowButtonClick(),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                        elevation: 0,
-                                      ),
-                                      child: Text(
-                                        'Not Now',
-                                        style: TextStyle(
-                                            color: widget.notNowButtonTextColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w300),
-                                      )),
-                                )
+                                _buildNextButton(value),
+                                _buildNotNowButton(value),
                               ],
                             ),
                           ),
@@ -199,50 +157,131 @@ class _ExamDateSelectPagesState extends State<ExamDateSelectPages> {
           ],
         ),
       ),
-      SafeArea(
-          child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop(context);
-              },
-              icon: Icon(Icons.chevron_left)))
+
+      // Debug
+      if (kDebugMode)
+        SafeArea(
+            child: Column(
+          children: [
+            const SizedBox(height: 50),
+            IconButton(
+                onPressed: () => Navigator.of(context).pop(context),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.red,
+                )),
+          ],
+        ))
     ]);
   }
 
+  Widget _buildNextButton(int pageIndexValue) => Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        child: ElevatedButton(
+          onPressed: () => _handleMainButtonClick(),
+          style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              backgroundColor: widget.mainColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15))),
+          child: Text(
+            _getButtonText(pageIndexValue),
+            style: TextStyle(fontSize: 20, color: widget.mainButtonTextColor),
+          ),
+        ),
+      );
+
+  Widget _buildNotNowButton(int pageIndexValue) => AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: double.infinity,
+        height: pageIndexValue < 1 ? 0 : 50,
+        //show after 1st page
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: ElevatedButton(
+            onPressed: () => _handleNotNowButtonClick(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              elevation: 0,
+            ),
+            child: Text(
+              'Not Now',
+              style: TextStyle(
+                  color: widget.notNowButtonTextColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300),
+            )),
+      );
+
   _handleMainButtonClick() {
-    if (pageController.page != 3) {
-      if (pageController.page == 1) {
+    //if not last page
+    if (pageController.page != 2) {
+      if (pageController.page == 0) {
         widget.onSelectExamDate(DateTime.parse(selectedTime['exam_date']));
-      } else if (pageController.page == 2) {
+      } else if (pageController.page == 1) {
         widget.onSelectReminderTime(TimeOfDay(
             hour: int.parse(selectedTime['reminder_hour']),
             minute: int.parse(selectedTime['reminder_minute'])));
       }
+
       pageController.nextPage(
           duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
-    } else {
+    }
+    // If at last page
+    else {
       widget.onStartDiagnostic();
     }
   }
 
   _handleNotNowButtonClick() {
-    if (pageController.page == 2) {
+    if (pageController.page == 1) {
+      // Skip reminder
       pageController.nextPage(
           duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     } else {
+      // Skip diagnostic
       widget.onSkipDiagnostic();
     }
   }
 
   _getButtonText(int value) {
     switch (value) {
-      case 1:
+      case 0:
         return 'Next';
-      case 2:
+      case 1:
         return 'Set Reminder (Recommended)';
-      case 3:
+      case 2:
         return 'Start Diagnostic Test';
       default:
         return '';
     }
+  }
+}
+
+class RightOnlyScrollPhysics extends ScrollPhysics {
+  const RightOnlyScrollPhysics({super.parent});
+
+  @override
+  RightOnlyScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return RightOnlyScrollPhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  double applyBoundaryConditions(ScrollMetrics position, double offset) {
+    // Block leftward swipes by returning the offset, indicating a boundary
+    if (offset < 0) {
+      return offset; // Block leftward swipes
+    }
+    return 0; // Allow rightward swipes
+  }
+
+  @override
+  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
+    // Block user-initiated leftward swipes
+    if (offset < 0) {
+      return 0; // No movement allowed
+    }
+    return offset; // Allow rightward swipes
   }
 }

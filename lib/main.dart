@@ -107,13 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
       Stack(
         alignment: Alignment.center,
         children: [
-          Image.asset('assets/images/exam_date_1_1.png'),
-          Image.asset('assets/images/exam_date_1_2.png'),
-        ],
-      ),
-      Stack(
-        alignment: Alignment.center,
-        children: [
           Image.asset('assets/images/exam_date_3_1.png'),
           Image.asset('assets/images/exam_date_3_2.png'),
         ],
@@ -139,74 +132,119 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => IntroStudyPlanPages(
+                            tabList: tabList,
+                            onFinish: () {
+                              print('onFinish');
+                            })));
+                  },
+                  child: const Text('Intro personal plan')),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => IntroStudyPlanPages(
-                          tabList: tabList, onFinish: () {})));
+                      builder: (context) => LoginPages(
+                            tabDataList: tabDataList,
+                            onRequestCodeClick: (String email) {
+                              print(email);
+                            },
+                            onSkip: () {
+                              print('skip');
+                            },
+                            onSubmit: (String otp) {
+                              print(otp);
+                            },
+                          )));
                 },
-                child: const Text('Intro personal plan')),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LoginPages(
-                          tabDataList: tabDataList,
-                          onRequestCodeClick: (String email) {},
-                          onSkip: () {},
-                          onSubmit: (String otp) {},
-                        )));
-              },
-              child: const Text('Login'),
+                child: const Text('Login'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ExamDateSelectPages(
-                        pageImages: pageImages,
-                        onStartDiagnostic: () {},
-                        onSkipDiagnostic: () {},
-                        onSelectExamDate: (date) {},
-                        onSelectReminderTime: (time) {})));
-              },
-              child: const Text('Exam time setup'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ExamDateSelectPages(
+                          pageImages: pageImages,
+                          onStartDiagnostic: () {
+                            print('startDiagnostic');
+                          },
+                          onSkipDiagnostic: () {
+                            print('skipDiagnostic');
+                          },
+                          onSelectExamDate: (date) {
+                            print(date);
+                          },
+                          onSelectReminderTime: (time) {
+                            print(time);
+                          })));
+                },
+                child: const Text('Exam time setup'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => DiagnosticTestResult(
-                          subjectList: subjectDataList,
-                          circleProgressImage: 'assets/images/level_inter.png',
-                          beginnerImage: 'assets/images/level_beginner.png',
-                          intermediateImage: 'assets/images/level_inter.png',
-                          advancedImage: 'assets/images/level_advanced.png',
-                          onNext: () {},
-                          testDate: DateTime.now(),
-                          mainProgress: 60,
-                        )));
-              },
-              child: const Text('Diagnostic result'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => DiagnosticTestResult(
+                            subjectList: subjectDataList,
+                            circleProgressImage:
+                                'assets/images/level_inter.png',
+                            beginnerImage: 'assets/images/level_beginner.png',
+                            intermediateImage: 'assets/images/level_inter.png',
+                            advancedImage: 'assets/images/level_advanced.png',
+                            onNext: () {
+                              print('onNext');
+                            },
+                            testDate: DateTime.now(),
+                            mainProgress: 60,
+                          )));
+                },
+                child: const Text('Diagnostic result'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        StudyPlanAnalyzingScreen(loadingTime: 10000,onFinish: () {})));
-              },
-              child: const Text('Analyzing'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => StudyPlanAnalyzingScreen(
+                          floatingTextAnimationTime: 1000,
+                          loadingTime: 3000,
+                          onFinish: () {
+                            print('onFinish');
+                          })));
+                },
+                child: const Text('Analyzing'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => StudyPlanReadyScreen(
-                        questions: 69,
-                        passingScore: 89,
-                        onStartLearning: () {})));
-              },
-              child: const Text('Personal plan ready'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => StudyPlanReadyScreen(
+                          questions: 69,
+                          passingScore: 89,
+                          onStartLearning: () {
+                            print('Start learning');
+                          })));
+                },
+                child: const Text('Personal plan ready'),
+              ),
             ),
           ],
         ),
